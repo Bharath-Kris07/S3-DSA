@@ -89,9 +89,11 @@ int main() {
         return 1;
     }
 
+    printf("Row Col Val\n");
     for (i = 1; i <= T[0].val; i++) {
-        printf("%d %d %d\n", T[i].row, T[i].col, T[i].val);
-    }
+    printf("%3d %3d %3d\n", T[i].row, T[i].col, T[i].val);
+}
+
 
     // Sum of matrices A and B into C
     i = j = k = 1;
@@ -121,10 +123,11 @@ int main() {
 
     // Print Sum
     printf("\nSum of Matrix A and B:\n");
+    printf("Row Col Val\n");
     for (i = 1; i <= C[0].val; i++) {
-        printf("%d %d %d\n", C[i].row, C[i].col, C[i].val);
+        printf("%3d %3d %3d\n", C[i].row, C[i].col, C[i].val);
     }
-
+    printf("\nFull Matrix C:\n");
     printFullMatrix(C, 0);
     return 0;
 }
