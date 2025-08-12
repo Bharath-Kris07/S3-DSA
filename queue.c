@@ -1,45 +1,55 @@
 #include <stdio.h>
-int Q[100], front = -1, rear = -1;
+int Q[4], front = -1, rear = -1;
 void enqueue(int item){
-    if(rear==99){
+    if((rear+1)%4==front){
         puts("queue is full");
     }
     else{
         if(front==-1){
             front=0;
         }
-        Q[++rear]=item;
+        rear=(rear+1)%4;
+        Q[rear]=item;
     }
 }
-int dequeue(){
-    if(front==-1||front>rear){
+void dequeue() {
+    if (front == -1)
         puts("queue is empty");
-        return -1;
+    else {
+        printf("Dequeued item: %d\n", Q[front]);
+        if (front == rear) {
+            front = rear = -1; 
+        } else {
+            front = (front + 1) % 4;
+        }
     }
-    return Q[front++];
 }
-int peek(){
-    if(front==-1 || front > rear){
+int peek() {
+    if (front == -1) {
         puts("queue is empty");
         return -1;
     }
     return Q[front];
 }
-int isEmpty(){
-    return (front==-1||front>rear);
+
+int isEmpty() {
+    return (front == -1);
 }
+
+
 int isFull(){
-    return (rear==99);
+    return (rear+1)%4==front;
 }
-void displayQueue(){
-    int i;
-    if(isEmpty()){
+void displayQueue() {
+    if (isEmpty()) {
         puts("queue is empty");
-    }
-    else{
-        puts("the queue is");
-        for(i=front;i<=rear;i++){
-            printf("%3d",Q[i]);
+    } else {
+        puts("The queue is:");
+        int i = front;
+        while (1) {
+            printf("%3d", Q[i]);
+            if (i == rear) break;
+            i = (i + 1) % 4;
         }
         printf("\n");
     }
@@ -58,17 +68,16 @@ int main(){
         scanf("%d",&choice);
         switch(choice){
             case 1:
+                if(isFull()){
+                    puts("queue is full, cannot enqueue");
+                    break;
+                }
                 puts("enter the element to be inserted");
                 scanf("%d",&item);
                 enqueue(item);
                 break;
             case 2:
-                item=dequeue();
-                if(item==-1){
-                    puts("dequeue operation failed");
-                } else {
-                    printf("Dequeued item: %d\n", item);
-                }
+                dequeue();
                 break;
             case 3:
                 item=peek();
