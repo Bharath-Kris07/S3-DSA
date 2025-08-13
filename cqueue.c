@@ -31,12 +31,9 @@ int peek() {
     }
     return Q[front];
 }
-
 int isEmpty() {
     return (front == -1);
 }
-
-
 int isFull(){
     return (rear+1)%4==front;
 }
