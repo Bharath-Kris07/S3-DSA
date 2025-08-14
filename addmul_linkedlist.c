@@ -13,7 +13,7 @@ void traverse(node* head){
     while(temp!=NULL){
         printf("%d^%d",temp->coef,temp->pow);
         temp=temp->link;
-        if(temp!=NULL){
+        if(temp!=NULL && temp->coef > 0){
             printf(" + ");  
         }
     }
