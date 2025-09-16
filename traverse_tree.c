@@ -27,10 +27,9 @@ node* createNode(int data){
     return newnode;
 }
 node* search(node* root,int key){
-    if(root==NULL) return NULL;
+    if(!root) return NULL;
     if(root->data==key) return root;
-    node* left=search(root->left,key);
-    if(left!=NULL) return left;
+    if(key < root->data) return search(root->left,key);
     return search(root->right,key);
 }
 void insertNode(node* root,int parent,int data,int isLeft){
