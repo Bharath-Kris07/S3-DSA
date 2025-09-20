@@ -3,56 +3,40 @@
 #include <string.h>
 #include <math.h>
 #include <stdlib.h>
-
 #define MAX 100
-
 char opstack[MAX];
 int opTop = -1;
-char postfix[MAX][MAX]; // 2D array to store tokens
+char postfix[MAX][MAX]; 
 int postIndex = 0;
-
-// Stack operations for operators
 void push(char op) {
     opstack[++opTop] = op;
 }
-
 char pop() {
     return opstack[opTop--];
 }
-
 char peek() {
     return opstack[opTop];
 }
-
 int isEmpty() {
     return opTop == -1;
 }
-
-// Precedence of operators
 int precedence(char op) {
     if (op == '^') return 3;
     if (op == '*' || op == '/') return 2;
     if (op == '+' || op == '-') return 1;
     return 0;
 }
-
-// Right-associative operator check
 int isRightAssociative(char op) {
     return op == '^';
 }
-
-// Check if character is an operator
 int isOperator(char ch) {
     return ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^';
 }
-
-// Convert infix to postfix
 void infixToPostfix(char infix[]) {
     int i = 0, k;
     char token[MAX];
-
     while (infix[i] != '\0') {
-        if (isalnum(infix[i])) { // Handles both digits and variable names
+        if (isalnum(infix[i])) {
             k = 0;
             while (isalnum(infix[i])) {
                 token[k++] = infix[i++];
@@ -66,7 +50,7 @@ void infixToPostfix(char infix[]) {
                 token[0] = pop(); token[1] = '\0';
                 strcpy(postfix[postIndex++], token);
             }
-            if (!isEmpty() && peek() == '(') pop(); // remove '('
+            if (!isEmpty() && peek() == '(') pop(); 
             i++;
         } else if (isOperator(infix[i])) {
             char currOp = infix[i];
@@ -79,23 +63,18 @@ void infixToPostfix(char infix[]) {
             push(currOp);
             i++;
         } else {
-            i++; // Skip whitespace or invalid characters
+            i++; 
         }
     }
-
-    // Pop any remaining operators
     while (!isEmpty()) {
         token[0] = pop(); token[1] = '\0';
         strcpy(postfix[postIndex++], token);
     }
 }
-
-// Evaluate the postfix expression
 int evalPostfix() {
     int stack[MAX];
     int top = -1;
     int a, b;
-
     for (int i = 0; i < postIndex; i++) {
         if (isdigit(postfix[i][0])) {
             stack[++top] = atoi(postfix[i]);
@@ -116,26 +95,19 @@ int evalPostfix() {
             }
         }
     }
-
     return stack[top];
 }
-
 int main() {
     char infixExp[MAX];
-
     printf("Enter infix expression (e.g. A+4*B-6): ");
     fgets(infixExp, sizeof(infixExp), stdin);
-    infixExp[strcspn(infixExp, "\n")] = '\0'; // Remove newline character
-
+    infixExp[strcspn(infixExp, "\n")] = '\0'; 
     infixToPostfix(infixExp);
-
     printf("Postfix Expression: ");
     for (int i = 0; i < postIndex; i++) {
         printf("%s ", postfix[i]);
     }
-
     int result = evalPostfix();
     printf("\nResult: %d\n", result);
-
     return 0;
 }

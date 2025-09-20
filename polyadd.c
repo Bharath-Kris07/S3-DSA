@@ -5,69 +5,69 @@ struct poly{
     int exp;
 };
 int main(){
-    struct poly *P,*Q, *R;
+    struct poly *A,*B,*C;
     int m,n,i,j,k;
     puts("enter the number of terms in the first polynomial");
     scanf("%d",&m);
     puts("enter the number of terms in the second polynomial");
     scanf("%d",&n); 
-    P=(struct poly *)malloc(m*sizeof(struct poly));
-    Q=(struct poly *)malloc(n*sizeof(struct poly));
-    R=(struct poly *)malloc((m+n)*sizeof(struct poly));
-    if(P==NULL||Q==NULL||R==NULL){
+    A=(struct poly *)malloc(m*sizeof(struct poly));
+    B=(struct poly *)malloc(n*sizeof(struct poly));
+    C=(struct poly *)malloc((m+n)*sizeof(struct poly));
+    if(A==NULL||B==NULL||C==NULL){
         puts("memory allocation failed");
         return 1;
     }
     puts("enter the coefficients and exponents of the first polynomial in decreasing order");
     for(i=0;i<m;i++){
-        scanf("%f%d",&(P+i)->coeff,&(P+i)->exp);
+        scanf("%f%d",&(A+i)->coeff,&(A+i)->exp);
     }
     puts("enter the coefficients and exponents of the second polynomial in decreasing order");
     for(i=0;i<n;i++){   
-        scanf("%f%d",&(Q+i)->coeff,&(Q+i)->exp);
+        scanf("%f%d",&(B+i)->coeff,&(B+i)->exp);
     }
     i=j=k=0;
     while(i<m && j<n){
-        if((P+i)->exp==(Q+j)->exp){
-            (R+k)->coeff=(P+i)->coeff+(Q+j)->coeff;
-            (R+k)->exp=(P+i)->exp;
+        if((A+i)->exp==(B+j)->exp){
+            (C+k)->coeff=(A+i)->coeff+(B+j)->coeff;
+            (C+k)->exp=(A+i)->exp;
             i++;
             j++;
             k++;
         }
-        else if((P+i)->exp>(Q+j)->exp){
-            (R+k)->coeff=(P+i)->coeff;
-            (R+k)->exp=(P+i)->exp;
+        else if((A+i)->exp>(B+j)->exp){
+            (C+k)->coeff=(A+i)->coeff;
+            (C+k)->exp=(A+i)->exp;
             i++;
             k++;
         }
-        else if((P+i)->exp<(Q+j)->exp){
-            (R+k)->coeff=(Q+j)->coeff;
-            (R+k)->exp=(Q+j)->exp;
+        else if((A+i)->exp<(B+j)->exp){
+            (C+k)->coeff=(B+j)->coeff;
+            (C+k)->exp=(B+j)->exp;
             j++;
             k++;
         }
       }
       while(i<m){
-        (R+k)->coeff=(P+i)->coeff;
-        (R+k)->exp=(P+i)->exp;
+        (C+k)->coeff=(A+i)->coeff;
+        (C+k)->exp=(A+i)->exp;
         i++;
         k++;
       }
     while(j<n){
-        (R+k)->coeff=(Q+j)->coeff;
-        (R+k)->exp=(Q+j)->exp;
+        (C+k)->coeff=(B+j)->coeff;
+        (C+k)->exp=(B+j)->exp;
         j++;
         k++;
     }
     puts("the resultant polynomial is");
     for(i=0;i<k;i++){
-        printf("%.1fx^%d",(R+i)->coeff,(R+i)->exp);
+        printf("%.1fx^%d",(C+i)->coeff,(C+i)->exp);
         if(i<k-1)
             putchar('+');
     }
-    free(P);
-    free(Q);
-    free(R);
+    free(A);
+    free(B);
+    free(C);
     return 0;
 }
