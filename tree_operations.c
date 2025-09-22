@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdbool.h>
 #include <stdlib.h>
 typedef struct node {
     int data;
@@ -60,7 +61,7 @@ void preorder(node* root){
         while(ptr!=NULL){
             printf("%d ", ptr->data);
             push(&s,ptr);
-            ptr=ptr->left; 
+            ptr=ptr->left;
         }
         if(!isEmpty(&s)){
             ptr=pop(&s);
@@ -76,7 +77,7 @@ void inorder(node* root){
     while(ptr!=NULL || !isEmpty(&s)){
         while(ptr!=NULL){
             push(&s,ptr);
-            ptr=ptr->left; 
+            ptr=ptr->left;
         }
         if(!isEmpty(&s)){
             ptr=pop(&s);
@@ -100,9 +101,61 @@ void postorder(node* root){
     }
     while(!isEmpty(&s2)){
         node* temp=pop(&s2);
-        printf("%d ", temp->data);    
+        printf("%d ", temp->data);
     }
     printf("\n");
+}
+void deleteNode(node* root,int key){
+    bool Flag=false;
+    node* parent=NULL;
+    node* curr=root;
+    while(curr!=NULL){
+        if(curr->data==key){
+            Flag=true;
+            break;
+        }
+        parent=curr;
+        if(key < curr->data) curr=curr->left;
+        else curr=curr->right;
+    }
+    if(!Flag){
+        puts("Node not found");
+        return;
+    }
+    if(curr->left==NULL && curr->right == NULL){
+        if(parent==NULL){
+            free(root);
+            root=NULL;
+        }
+        else if(parent->left==curr) parent->left=NULL;
+        else parent->right=NULL;
+        free(curr);
+    }
+    else if(curr->left && curr->right){
+        node* succParent=curr;
+        node* succ=curr->right;
+        while(succ->left!=NULL){
+            succParent=succ;
+            succ=succ->left;
+        }
+        curr->data=succ->data;
+        if(succParent==curr){
+            succParent->right=succ->right;
+        }else{
+            succParent->left=succ->right;
+        }
+        free(succ);
+    }
+    else{
+        node *child=(curr->left!=NULL)?curr->left:curr->right;
+        if(curr==root){
+            free(root);
+            root=child;
+        }
+        else if(parent->left==curr) parent->left=child;
+        else parent->right=child;
+        free(curr);
+    }
 }
 int main(){
     int choice,option,data,side;
@@ -112,8 +165,9 @@ int main(){
         puts("1. Create Tree");
         puts("2. Preorder Traversal");
         puts("3. Inorder Traversal");
-        puts("4. Postorder Traversal");  
-        puts("5. Exit");
+        puts("4. Postorder Traversal");
+        puts("5. Delete a node");
+        puts("6. Exit");
         scanf("%d",&choice);
         switch(choice){
             case 1:
@@ -150,11 +204,16 @@ int main(){
                 postorder(root);
                 break;
             case 5:
+                puts("enter the node to be deleted");
+                scanf("%d",&data);
+                deleteNode(root,data);
+                break;
+            case 6:
                 puts("Exiting...");
                 break;
             default:
                 puts("Invalid choice");
         }
-    } while(choice!=5);
+    } while(choice!=6);
     return 0;
 }
