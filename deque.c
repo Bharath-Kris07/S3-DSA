@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <limits.h>
 #include <stdlib.h>
 #define maxsize 4
 int front=-1,rear=-1,Q[maxsize];
@@ -38,6 +39,7 @@ int DequeueFront(){
     int item;
     if(isEmpty()){
         puts("Queue is empty");
+        return INT_MIN;
     }
     else{
         item=Q[front];
@@ -52,6 +54,7 @@ int DequeueRear(){
     int item;
     if(isEmpty()){
         puts("Queue is empty");
+        return INT_MIN;
     }
     else{
         item=Q[rear];
@@ -107,13 +110,13 @@ int main(){
         EnqueueRear(item);
         break;
     case 3: 
-        item=DequeueFront();
-        if(item!=-1)
-            printf("Deleted element from front is %d\n",item);
+        item = DequeueFront();
+        if(item != INT_MIN) 
+            printf("Deleted element from front is %d\n", item);
         break;
     case 4: 
         item=DequeueRear();
-        if(item!=-1)
+        if(item!=INT_MIN)
             printf("Deleted element from rear is %d\n",item);
         break;
     case 5: 
