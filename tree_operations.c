@@ -27,31 +27,16 @@ node* createNode(int data){
     newnode->left=newnode->right=NULL;
     return newnode;
 }
-node* search(node* root,int key){
-    if(!root) return NULL;
-    if(root->data==key) return root;
-    if(key < root->data) return search(root->left,key);
-    return search(root->right,key);
-}
-void insertNode(node* root,int parent,int data,int isLeft){
-    node* parentNode=search(root,parent);
-    if(parentNode==NULL){
-        puts("Parent node not found");
-        return;
+node* insertBST(node* root, int data) {
+    if (root == NULL) {
+        return createNode(data);
     }
-    if(isLeft){
-        if(parentNode->left!=NULL){
-            puts("Left child already exists");
-            return;
-        }
-        parentNode->left=createNode(data);
-    } else {
-        if(parentNode->right!=NULL){
-            puts("Right child already exists");
-            return;
-        }
-        parentNode->right=createNode(data);
+    if (data < root->data) {
+        root->left = insertBST(root->left, data);
+    } else if (data > root->data) {
+        root->right = insertBST(root->right, data);
     }
+    return root;
 }
 void preorder(node* root){
     if(root==NULL){ puts("Tree is empty"); return; }
@@ -105,64 +90,64 @@ void postorder(node* root){
     }
     printf("\n");
 }
-void deleteNode(node* root,int key){
-    bool Flag=false;
-    node* parent=NULL;
-    node* curr=root;
-    while(curr!=NULL){
-        if(curr->data==key){
-            Flag=true;
-            break;
-        }
-        parent=curr;
-        if(key < curr->data) curr=curr->left;
-        else curr=curr->right;
+node* deleteNode(node* root, int key) {
+    if (root == NULL) {
+        puts("Node not found or tree is empty");
+        return NULL;
     }
-    if(!Flag){
+    node* parent = NULL;
+    node* curr = root;
+    while (curr != NULL && curr->data != key) {
+        parent = curr;
+        if (key < curr->data) {
+            curr = curr->left;
+        } else {
+            curr = curr->right;
+        }
+    }
+    if (curr == NULL) {
         puts("Node not found");
-        return;
+        return root;
     }
-    if(curr->left==NULL && curr->right == NULL){
-        if(parent==NULL){
+    if (curr->left == NULL && curr->right == NULL) {
+        if (curr == root) {
             free(root);
-            root=NULL;
+            return NULL;
         }
-        else if(parent->left==curr) parent->left=NULL;
-        else parent->right=NULL;
+        if (parent->left == curr) parent->left = NULL;
+        else parent->right = NULL;
         free(curr);
     }
-    else if(curr->left && curr->right){
-        node* succParent=curr;
-        node* succ=curr->right;
-        while(succ->left!=NULL){
-            succParent=succ;
-            succ=succ->left;
+    else if (curr->left && curr->right) {
+        node* succParent = curr;
+        node* succ = curr->right;
+        while (succ->left != NULL) {
+            succParent = succ;
+            succ = succ->left;
         }
-        curr->data=succ->data;
-        if(succParent==curr){
-            succParent->right=succ->right;
-        }else{
-            succParent->left=succ->right;
-        }
+        curr->data = succ->data;
+        if (succParent == curr) succParent->right = succ->right;
+        else succParent->left = succ->right;
         free(succ);
     }
-    else{
-        node *child=(curr->left!=NULL)?curr->left:curr->right;
-        if(curr==root){
+    else {
+        node* child = (curr->left != NULL) ? curr->left : curr->right;
+        if (curr == root) {
             free(root);
-            root=child;
+            return child;
         }
-        else if(parent->left==curr) parent->left=child;
-        else parent->right=child;
+        if (parent->left == curr) parent->left = child;
+        else parent->right = child;
         free(curr);
     }
+    return root;
 }
 int main(){
-    int choice,option,data,side;
-    node* root=NULL;
+    int choice, data;
+    node* root = NULL;
     do {
         puts("\nEnter your choice:");
-        puts("1. Create Tree");
+        puts("1. Insert into BST");
         puts("2. Preorder Traversal");
         puts("3. Inorder Traversal");
         puts("4. Postorder Traversal");
@@ -171,28 +156,9 @@ int main(){
         scanf("%d",&choice);
         switch(choice){
             case 1:
-                puts("1. Root Node");
-                puts("2. Insert Child");
-                scanf("%d",&option);
-                if(option==1){
-                    puts("Enter data for root node:");
-                    scanf("%d",&data);
-                    root=createNode(data);
-                } else if(option==2){
-                    if(root==NULL){
-                        puts("Create root node first!");
-                        break;
-                    }
-                    puts("Enter the parent data:");
-                    int parent; scanf("%d",&parent);
-                    puts("Enter the data for child node:");
-                    scanf("%d",&data);
-                    puts("1. Left child  2. Right child");
-                    scanf("%d",&side);
-                    insertNode(root,parent,data, side==1);
-                } else {
-                    puts("Invalid option");
-                }
+                puts("Enter data to insert into BST:");
+                scanf("%d",&data);
+                root = insertBST(root, data);
                 break;
             case 2:
                 preorder(root);
@@ -204,9 +170,13 @@ int main(){
                 postorder(root);
                 break;
             case 5:
-                puts("enter the node to be deleted");
+                if(root == NULL){
+                    puts("Tree is empty!");
+                    break;
+                }
+                puts("Enter the node to be deleted");
                 scanf("%d",&data);
-                deleteNode(root,data);
+                root = deleteNode(root,data);
                 break;
             case 6:
                 puts("Exiting...");
