@@ -15,3 +15,16 @@ void binary_search(int A[],int n,int key){
     }
     printf("Element %d not found\n",key);
 }
+int main(){
+    int n,key;
+    printf("Enter number of elements: ");
+    scanf("%d",&n);
+    int A[n];
+    printf("Enter %d sorted elements: ",n);
+    for(int i=0;i<n;i++)
+        scanf("%d",&A[i]);
+    printf("Enter element to search: ");
+    scanf("%d",&key);
+    binary_search(A,n,key);
+    return 0;
+}
