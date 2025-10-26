@@ -2,86 +2,132 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-
-typedef struct node {
+#define MAX_EXPR_SIZE 100
+struct Node {
     char data;
-    struct node *lc, *rc;
-}node;
-
-node *stack[100];
-int top = -1;
-
-void push(node *n) {
-    stack[++top]=n;
+    struct Node *left;
+    struct Node *right;
+};
+char charStack[MAX_EXPR_SIZE];
+int charTop = -1;
+void pushChar(char item) {
+    charStack[++charTop] = item;
 }
-
-node* pop() {
-    return stack[top--];
+char popChar() {
+    if (charTop == -1) return -1;
+    return charStack[charTop--];
 }
-
-node* create(char data){
-    node *n=(node*)malloc(sizeof(node));
-    n->data=data;
-    n->lc=n->rc=NULL;
-    return n;
+char peekChar() {
+    return charStack[charTop];
 }
-
-node* buildTree(char postfix[]) {
-    for (int i=0;postfix[i]!='\0';i++) {
-        char c=postfix[i];
-        if(isalnum(c)) { 
-            push(create(c));
-        }else{
-            node *n=create(c);
-            n->rc=pop();
-            n->lc=pop();
-            push(n);
+struct Node* nodeStack[MAX_EXPR_SIZE];
+int nodeTop = -1;
+void pushNode(struct Node* node) {
+    nodeStack[++nodeTop] = node;
+}
+struct Node* popNode() {
+    if (nodeTop == -1) return NULL;
+    return nodeStack[nodeTop--];
+}
+struct Node* newNode(char data) {
+    struct Node* node = (struct Node*)malloc(sizeof(struct Node));
+    if (!node) {
+        printf("Memory allocation error\n");
+        exit(1);
+    }
+    node->data = data;
+    node->left = NULL;
+    node->right = NULL;
+    return node;
+}
+int precedence(char op) {
+    switch (op) {
+        case '+':
+        case '-':
+            return 1;
+        case '*':
+        case '/':
+            return 2;
+        case '^':
+            return 3;
+    }
+    return -1;
+}
+int isOperator(char ch) {
+    return (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^');
+}
+void infixToPostfix(const char* infix, char* postfix) {
+    int i, j;
+    charTop = -1;
+    for (i = 0, j = 0; infix[i]; ++i) {
+        if (isalnum(infix[i])) {
+            postfix[j++] = infix[i];
+        } else if (infix[i] == '(') {
+            pushChar(infix[i]);
+        } else if (infix[i] == ')') {
+            while (charTop != -1 && peekChar() != '(') {
+                postfix[j++] = popChar();
+            }
+            popChar();
+        } else if (isOperator(infix[i])) {
+            while (charTop != -1 && precedence(infix[i]) <= precedence(peekChar())) {
+                postfix[j++] = popChar();
+            }
+            pushChar(infix[i]);
         }
     }
-    return pop();
-}
-
-void inorder(node *p) {
-    if (p!=NULL){
-    if (p->lc) 
-        printf("(");
-    inorder(p->lc);
-    printf("%c", p->data);
-    inorder(p->rc);
-    if (p->rc) 
-        printf(")");
+    while (charTop != -1) {
+        postfix[j++] = popChar();
     }
-    return;
+    postfix[j] = '\0';
 }
-
-void preorder(node* p) {
-    if (p!=NULL){
-    printf("%c", p->data);
-    preorder(p->lc);
-    preorder(p->rc);
+struct Node* constructTree(const char* postfix) {
+    struct Node *t, *t1, *t2;
+    nodeTop = -1;
+    for (int i = 0; postfix[i] != '\0'; i++) {
+        if (isalnum(postfix[i])) {
+            t = newNode(postfix[i]);
+            pushNode(t);
+        } else if (isOperator(postfix[i])) {
+            t = newNode(postfix[i]);
+            t1 = popNode();
+            t2 = popNode();
+            t->right = t1;
+            t->left = t2;
+            pushNode(t);
+        }
     }
-    return;
+    t = popNode();
+    return t;
 }
-
-void postorder(node* p) {
-    if (p!=NULL){
-    postorder(p->lc);
-    postorder(p->rc);
-    printf("%c", p->data);
+void printPrefix(struct Node* root) {
+    if (root) {
+        printf("%c", root->data);
+        printPrefix(root->left);
+        printPrefix(root->right);
     }
-    return;
 }
-
-
-void main() {
-    char postfix[100];
-    printf("Enter postfix expression: ");
-    scanf("%s", postfix);
-    node* root = buildTree(postfix);
-    printf("\nInorder   : ");
-    inorder(root);
-    printf("\nPreorder  : ");
-    preorder(root);
-    printf("\nPostorder : ");
-    postorder(root);
+void printPostfix(struct Node* root) {
+    if (root) {
+        printPostfix(root->left);
+        printPostfix(root->right);
+        printf("%c", root->data);
+    }
+}
+int main() {
+    char infix[MAX_EXPR_SIZE];
+    char postfix[MAX_EXPR_SIZE];
+    printf("Enter a simple arithmetic infix expression (e.g., (a+b)*(c-d)):\n");
+    scanf("%s", infix);
+    infixToPostfix(infix, postfix);
+    printf("\nIntermediate Postfix Expression: %s\n", postfix);
+    struct Node* root = constructTree(postfix);
+    printf("Expression Tree has been constructed.\n\n");
+    printf("Prefix Equivalent (from tree traversal): ");
+    printPrefix(root);
+    printf("\n");
+    printf("Postfix Equivalent (from tree traversal): ");
+    printPostfix(root);
+    printf("\n");
+    return 0;
 }
