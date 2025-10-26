@@ -43,9 +43,9 @@ int DequeueFront(){
     }
     else{
         item=Q[front];
-        if(front==rear){
+        if(front==rear)
             front=rear=-1;
-        }
+        else
         front=(front+1)%maxsize;
     }
     return item;
@@ -60,6 +60,7 @@ int DequeueRear(){
         item=Q[rear];
         if(front==rear)
             front=rear=-1;
+        else
         rear=(rear+maxsize-1)%maxsize;
     }
     return item;
