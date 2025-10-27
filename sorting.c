@@ -5,6 +5,32 @@ void swap(int *x,int* y){
     *x=*y;
     *y=temp;
 }
+void heapify(int A[],int i,int n){
+    int lc=2*i+1;
+    int rc=2*i+2;
+    int largest=i;
+    if(lc<n && A[lc]>A[largest]){
+        largest=lc;
+    }if(rc<n && A[rc]>A[largest]){
+        largest=rc;
+    }
+    if(largest!=i){
+        swap(&A[i],&A[largest]);
+        heapify(A,largest,n);
+    }
+}
+void build_max_heap(int A[],int n){
+    for(int i=n/2-1;i>=0;i--){
+        heapify(A,i,n);
+    }
+}
+void heap_sort(int A[],int n){
+    build_max_heap(A,n);
+    for(int i=n-1;i>=1;i--){
+        swap(&A[0],&A[i]);
+        heapify(A,0,i);
+    }
+}
 void bubble_sort(int A[],int n){
     for(int pass=1;pass<=n-1;pass++){
         for(int i=0;i<n-pass-1;i++){
@@ -107,7 +133,7 @@ int main(){
     for(int i=0;i<n;i++){
         scanf("%d",&A[i]);
     }
-    printf("Choose sorting method:\n1. Bubble Sort\n2. Insertion Sort\n 3. Quick Sort\n 4. Selection Sort\n 5. Merge Sort\n");
+    printf("Choose sorting method:\n1. Bubble Sort\n2. Insertion Sort\n 3. Quick Sort\n 4. Selection Sort\n 5. Merge Sort\n 6. Heap Sort\n");
     scanf("%d",&choice);
     switch(choice){
         case 1:
@@ -124,6 +150,9 @@ int main(){
             break;
         case 5:
             merge_sort(A,0,n-1);
+            break;
+        case 6:
+            heap_sort(A,n);
             break;
         default:
             printf("Invalid choice\n");
