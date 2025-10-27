@@ -1,63 +1,76 @@
 #include <stdio.h>
-#include <limits.h>
-#define MAX 100
-#define INF INT_MAX
-void findShortestDist(int grid[MAX][MAX], int m, int n) {
+#include <stdbool.h>
+#define MAX 100 
+typedef struct {
+    int x, y;
+} Position;
+Position q[MAX * MAX];
+int front = 0, rear = 0;
+bool isValid(int x, int y, int m, int n) {
+    return (x >= 0 && x < m && y >= 0 && y < n);
+}
+void findShortestMineDistance(int m, int n, char grid[m][n]) {
     int dist[MAX][MAX];
-    int qx[MAX * MAX], qy[MAX * MAX]; 
-    int front = 0, rear = 0;
-    int dir[4][2] = {{1,0},{-1,0},{0,1},{0,-1}};
+    bool visited[MAX][MAX];
+    front = 0;
+    rear = 0;
+    int dir[4][2] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
     for (int i = 0; i < m; i++) {
         for (int j = 0; j < n; j++) {
-            if (grid[i][j] == 1) {
-                dist[i][j] = 0;
-                qx[rear] = i;
-                qy[rear] = j;
-                rear++;
+            visited[i][j] = false;
+            if (grid[i][j] == 'M') {
+                dist[i][j] = 0;       
+                visited[i][j] = true; 
+                Position minePos = {i, j};
+                q[rear++] = minePos;  
             } else {
-                dist[i][j] = INF;
+                dist[i][j] = -1;     
             }
         }
     }
     while (front < rear) {
-        int x = qx[front];
-        int y = qy[front];
-        front++;
-        for (int k = 0; k < 4; k++) {
-            int nx = x + dir[k][0];
-            int ny = y + dir[k][1];
-            if (nx >= 0 && nx < m && ny >= 0 && ny < n) {
-                if (dist[nx][ny] > dist[x][y] + 1) {
-                    dist[nx][ny] = dist[x][y] + 1;
-                    qx[rear] = nx;
-                    qy[rear] = ny;
-                    rear++;
-                }
+        Position curr = q[front++];
+        for (int i = 0; i < 4; i++) {
+            int nx = curr.x + dir[i][0];
+            int ny = curr.y + dir[i][1];
+            if (isValid(nx, ny, m, n) && !visited[nx][ny]) {
+                visited[nx][ny] = true;                   
+                dist[nx][ny] = dist[curr.x][curr.y] + 1; 
+                Position next = {nx, ny};
+                q[rear++] = next;                         
             }
         }
     }
-    printf("\nShortest distance of each cell from nearest landmine:\n");
+    printf("\nShortest distance from nearest mine ('M'):\n");
     for (int i = 0; i < m; i++) {
         for (int j = 0; j < n; j++) {
-            if (dist[i][j] == INF)
-                printf(" -1 ");
-            else
-                printf(" %2d ", dist[i][j]);
+             if (grid[i][j] == 'M'){
+                 printf("  M ");
+             } else {
+                 printf("%3d ", dist[i][j]); 
         }
         printf("\n");
     }
 }
 int main() {
     int m, n;
-    int grid[MAX][MAX];
-    printf("Enter number of rows and columns: ");
+    char grid[MAX][MAX]; 
+    printf("Enter the dimensions of the grid (rows columns): ");
     scanf("%d %d", &m, &n);
-    printf("Enter the maze (0 for empty, 1 for landmine):\n");
+    if (m <= 0 || n <= 0 || m > MAX || n > MAX) {
+        printf("Invalid dimensions. Max size is %d x %d.\n", MAX, MAX);
+        return 1;
+    }
+    printf("Enter the grid ('M' for mine, 'O' for open):\n");
     for (int i = 0; i < m; i++) {
         for (int j = 0; j < n; j++) {
-            scanf("%d", &grid[i][j]);
+            scanf(" %c", &grid[i][j]);
+            if (grid[i][j] != 'M' && grid[i][j] != 'O') {
+                printf("Invalid character entered: %c. Please use only 'M' or 'O'.\n", grid[i][j]);
+                j--; 
+            }
         }
     }
-    findShortestDist(grid, m, n);
+    findShortestMineDistance(m, n, grid);
     return 0;
 }
