@@ -49,8 +49,8 @@ void findShortestMineDistance(int m, int n, char grid[m][n]) {
              } else {
                  printf("%3d ", dist[i][j]); 
         }
-        printf("\n");
     }
+    printf("\n");
 }
 }
 int main() {
