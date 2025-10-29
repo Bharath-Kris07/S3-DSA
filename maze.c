@@ -6,8 +6,12 @@ typedef struct {
 } Position;
 Position q[MAX * MAX];
 int front = 0, rear = 0;
-bool isValid(int x, int y, int m, int n) {
-    return (x >= 0 && x < m && y >= 0 && y < n);
+bool isValid(int x, int y, int m, int n,char grid[m][n]) {
+    if(x<0 || x>=m || y<0 || y>=n)
+        return false;
+    if(grid[x][y]=='X')
+        return false;
+    return true;
 }
 void findShortestMineDistance(int m, int n, char grid[m][n]) {
     int dist[MAX][MAX];
@@ -33,7 +37,7 @@ void findShortestMineDistance(int m, int n, char grid[m][n]) {
         for (int i = 0; i < 4; i++) {
             int nx = curr.x + dir[i][0];
             int ny = curr.y + dir[i][1];
-            if (isValid(nx, ny, m, n) && !visited[nx][ny]) {
+            if (isValid(nx, ny, m, n,grid) && !visited[nx][ny]) {
                 visited[nx][ny] = true;                   
                 dist[nx][ny] = dist[curr.x][curr.y] + 1; 
                 Position next = {nx, ny};
@@ -62,11 +66,11 @@ int main() {
         printf("Invalid dimensions. Max size is %d x %d.\n", MAX, MAX);
         return 1;
     }
-    printf("Enter the grid ('M' for mine, 'O' for open):\n");
+    printf("Enter the grid ('M' for mine, 'O' for open,'X' for wall):\n");
     for (int i = 0; i < m; i++) {
         for (int j = 0; j < n; j++) {
             scanf(" %c", &grid[i][j]);
-            if (grid[i][j] != 'M' && grid[i][j] != 'O') {
+            if (grid[i][j] != 'M' && grid[i][j] != 'O' && grid[i][j] != 'X') {
                 printf("Invalid character entered: %c. Please use only 'M' or 'O'.\n", grid[i][j]);
                 j--; 
             }
