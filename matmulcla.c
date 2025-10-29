@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     A = malloc(m1 * sizeof(int *));
-    B = malloc(m2 * sizeof(int 
+    B = malloc(m2 * sizeof(int *));
     C = malloc(m1 * sizeof(int *));
     for (i = 0; i < m1; i++) A[i] = malloc(n1 * sizeof(int));
     for (i = 0; i < m2; i++) B[i] = malloc(n2 * sizeof(int));
